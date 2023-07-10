@@ -26,11 +26,11 @@ repositories {
 	mavenCentral()
 }
 
-application {
-	mainClass = 'org.hyperledger.fabric.contract.ContractRouter'
-}
+// application {
+// 	mainClass = 'org.hyperledger.fabric.contract.ContractRouter'
+// }
 
-mainClassName = 'org.hyperledger.fabric.contract.ContractRouter'
+// mainClassName = 'org.hyperledger.fabric.contract.ContractRouter'
 
 shadowJar {
 	baseName = 'chaincode'
