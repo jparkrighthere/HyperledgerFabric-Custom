@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<title>Hyperledger Fabric</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+
+<h1>Hyperledger Fabric Bank Account 생성 및 조회</h1>
+
+
+<h2>계좌 생성</h2>
+
+<table>
+	<tr>
+		<td> 계좌 유형</td>
+		<td><select id="accountType">
+			<option disabled selected value> -- select an option -- </option>
+			<option value= "PERSONAL">개인</option>
+			<option value= "COMPANY">법인</option>
+			<option value= "COMMISSION">Commission</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td> 성함 </td>
+		<td><input type="text" id="owner"></td>
+	</tr>
+	<tr>
+		<td> 시드머니 </td>
+		<td><input type="number" id="balance"></td>
+	</tr>
+</table>
+<button onclick="create()">Create Account</button>
+
+<h2> 계좌 송금 </h2>
+<tr>
+	<td> 보내는 이 </td>
+	<td><input type="text" id="sender"></td>
+</tr>
+<tr>
+	<td> 받는 이 </td>
+	<td><input type="text" id="receiver"></td>
+</tr>
+<tr>
+	<td> 금액 </td>
+	<td><input type="number" id="money"></td>
+</tr>
+<button onclick="transaction()">Complete Transaction</button>
+
+<h2>계좌 조회</h2>
+<button onclick="print()">View Account</button>
+
+</body>
+<div id="body"></div>
+<script>
+    const print =  async() => {
+        const idk = await fetch("http://localhost:8080/account/list");
+        const data = await idk.json();
+
+        const bodyDiv = document.getElementById("body");
+        bodyDiv.replaceChildren();
+
+        for (const y of data) {
+            const paragraph = document.createElement("p");
+            paragraph.textContent = `AssetID : ${y.assetId},  거래목적 : ${y.accountType},  성함 : ${y.owner},  금액 : $${y.balance}`;
+            bodyDiv.appendChild(paragraph);
+        }
+    }
+    const create = async() => {
+        const accountType = document.getElementById("accountType").value;
+        const owner = document.getElementById("owner").value;
+        const balance = document.getElementById("balance").value;
+
+        if (!accountType || !owner || !balance) {
+            alert("You have to fill in the all blanks.");
+            return;
+        }
+
+        const response = await fetch("http://localhost:8080/account/create", {
+            method : 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({
+                "accountType" : accountType,
+                "owner" : owner,
+                "balance" : balance
+            })
+        });
+    }
+    const transaction = async() => {
+		const sender = document.getElementById("sender").value;
+		const receiver = document.getElementById("receiver").value;
+		const money = document.getElementById("money").value;
+
+		if (!sender || !receiver || !money) {
+			alert("You have to fill in all the blanks.");
+			return;
+		}
+		const response = await fetch("http://localhost:8080/account/transaction", {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				"sender": sender,
+				"receiver": receiver,
+				"money": money
+			})
+		});
+	}
+	</script>
+
+
+</html>
